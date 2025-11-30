@@ -21,7 +21,7 @@ The application follows a 3-Tier Serverless Architecture:
 
 ```mermaid
 graph TD
-    User[User / Browser] -->|HTTPS Request| S3[Amazon S3 (Frontend Hosting)]
-    User -->|POST Score Data| API[Amazon API Gateway]
-    API -->|Triggers| Lambda[AWS Lambda (Python Logic)]
-    Lambda -->|Persists Data| DB[(Amazon DynamoDB)]
+    User["User / Browser"] -->|"HTTPS Request"| S3["Amazon S3 (Frontend Hosting)"]
+    User -->|"POST Score Data"| API["Amazon API Gateway"]
+    API -->|"Triggers"| Lambda["AWS Lambda (Python Logic)"]
+    Lambda -->|"Persists Data"| DB[("Amazon DynamoDB")]
