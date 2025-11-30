@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Handicap Calculator</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; background-color: #f4f4f9; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        .score-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #219150; }
+        #result { margin-top: 20px; text-align: center; font-size: 1.2rem; font-weight: bold; color: #333; }
+        .label-row { display: flex; gap: 10px; font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
+        .col { flex: 1; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>⛳ Handicap Calculator</h1>
+    
+    <div class="label-row">
+        <div class="col">Score</div>
+        <div class="col">Rating</div>
+        <div class="col">Slope</div>
+    </div>
+
+    <form id="calcForm">
+        <div id="inputs">
+            </div>
+        <button type="submit">Calculate Handicap</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    const apiUrl = "https://i5dpz0s2e2.execute-api.us-east-1.amazonaws.com/calculate"; 
+
+    // Generate 5 input rows for testing
+    const container = document.getElementById('inputs');
+    for(let i=0; i<5; i++) {
+        container.innerHTML += `
+            <div class="score-row">
+                <input type="number" class="score" placeholder="88" required>
+                <input type="number" class="rating" placeholder="72.0" step="0.1" required>
+                <input type="number" class="slope" placeholder="113" required>
+            </div>
+        `;
+    }
+
+    document.getElementById('calcForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const resultDiv = document.getElementById('result');
+        resultDiv.textContent = "Calculating...";
+
+        // 1. Scrape data from HTML inputs
+        const scores = [];
+        const rows = document.querySelectorAll('.score-row');
+        
+        rows.forEach(row => {
+            const s = row.querySelector('.score').value;
+            const r = row.querySelector('.rating').value;
+            const sl = row.querySelector('.slope').value;
+            
+            if(s && r && sl) {
+                scores.push({
+                    score: parseFloat(s),
+                    rating: parseFloat(r),
+                    slope: parseFloat(sl)
+                });
+            }
+        });
+
+        // 2. Send to AWS Lambda
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ scores: scores })
+            });
+
+            const data = await response.json();
+
+            if (data.handicap_index !== undefined) {
+                resultDiv.innerHTML = `Your Index: <span style="color:#27ae60; font-size: 2rem;">${data.handicap_index}</span>`;
+            } else {
+                resultDiv.textContent = "Error: " + JSON.stringify(data);
+            }
+        } catch (error) {
+            resultDiv.textContent = "Network Error. Check console.";
+            console.error(error);
+        }
+    });
+</script>
+
+</body>
+</html>
