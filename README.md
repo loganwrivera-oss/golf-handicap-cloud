@@ -11,7 +11,7 @@ This is a full-stack, cloud-native application designed to calculate a golfer's 
 
 Unlike traditional web apps hosted on a single server, this project is entirely **Serverless**. It uses **AWS Lambda** for compute, **Amazon S3** for static hosting, and **DynamoDB** for data persistence. The entire infrastructure is provisioned using **Terraform** (IaC) and deployed via a **GitHub Actions** CI/CD pipeline.
 
-**[🔗 Live Demo Here](PASTE_YOUR_AWS_WEBSITE_LINK_HERE)**
+**[🔗 Live Demo Here](golf-app-texas-logan.s3-website-us-east-1.amazonaws.com)**
 
 ---
 
