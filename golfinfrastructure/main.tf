@@ -174,3 +174,20 @@ output "api_endpoint" {
 output "website_url" {
   value = aws_s3_bucket_website_configuration.golf_hosting.website_endpoint
 }
+# --- PERMISSIONS UPDATE ---
+# Allow Lambda to write to DynamoDB
+resource "aws_iam_role_policy" "lambda_dynamo_policy" {
+  name = "dynamodb_write_policy"
+  role = aws_iam_role.iam_for_lambda.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["dynamodb:PutItem"]
+        Resource = aws_dynamodb_table.golf_scores.arn
+      }
+    ]
+  })
+}
